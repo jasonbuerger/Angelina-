@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANGELINA GRAHNERT | Official Artist Portal</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@200;400;700&family=Bodoni+Moda:ital,wght@1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --magenta: #ff00ff;
+            --dark: #050005;
+            --glass: rgba(255, 255, 255, 0.05);
+            --transition: all 0.5s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--dark); color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; line-height: 1.6; }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 30px 5%;
+            display: flex; justify-content: space-between; align-items: center; z-index: 2000;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
+        }
+        .logo { font-family: 'Syncopate'; font-size: 1.5rem; color: var(--magenta); text-decoration: none; letter-spacing: 5px; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .lang-switch span { cursor: pointer; font-size: 0.8rem; opacity: 0.5; margin-left: 10px; transition: 0.3s; }
+        .lang-switch span.active { opacity: 1; color: var(--magenta); font-weight: bold; }
+
+        .hamburger { width: 35px; height: 20px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 2100; }
+        .hamburger span { width: 100%; height: 2px; background: white; transition: var(--transition); }
+        .hamburger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+        /* --- MENU OVERLAY --- */
+        .menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; transform: translateY(-100%);
+            transition: var(--transition); z-index: 1900;
+        }
+        .menu-overlay.active { transform: translateY(0); }
+        .menu-overlay a { font-family: 'Syncopate'; font-size: clamp(1rem, 4vw, 1.8rem); color: white; text-decoration: none; margin: 8px 0; transition: 0.3s; }
+        .menu-overlay a:hover { color: var(--magenta); letter-spacing: 5px; }
+
+        /* --- CONTENT SYSTEM --- */
+        .page { display: none; min-height: 100vh; padding: 150px 10% 80px; animation: fadeIn 0.8s forwards; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-family: 'Syncopate'; font-size: clamp(2rem, 8vw, 5rem); line-height: 0.9; margin-bottom: 30px; text-transform: uppercase; }
+        h2 { font-family: 'Syncopate'; font-size: 1.5rem; color: var(--magenta); margin-bottom: 20px; }
+        .accent { color: var(--magenta); }
+        .glass-card { background: var(--glass); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,0,255,0.1); margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+
+        /* --- SHOP & COUNTDOWN --- */
+        #countdown { display: flex; gap: 20px; font-family: 'Syncopate'; margin: 30px 0; justify-content: center; }
+        .time-unit span { display: block; font-size: clamp(1.5rem, 5vw, 3rem); color: var(--magenta); }
+        .time-label { font-size: 0.6rem; opacity: 0.6; }
+        .teaser-img { width: 100%; height: 100%; object-fit: cover; filter: blur(15px); opacity: 0.4; transition: 0.5s; }
+        .input-box { background: transparent; border: 1px solid var(--magenta); padding: 15px; color: white; width: 100%; max-width: 300px; margin: 20px 0; }
+        .btn-notify { background: var(--magenta); border: none; padding: 15px 30px; font-family: 'Syncopate'; cursor: pointer; font-size: 0.7rem; color: #000; font-weight: bold; }
+
+        /* --- LISTS --- */
+        ul { list-style: none; }
+        li { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        footer { padding: 40px; text-align: center; font-size: 0.7rem; opacity: 0.4; border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo" onclick="showPage('home')">AG</a>
+        <div class="nav-right">
+            <div class="lang-switch">
+                <span onclick="setLang('de')" id="btn-de" class="active">DE</span>
+                <span onclick="setLang('en')" id="btn-en">EN</span>
+                <span onclick="setLang('fr')" id="btn-fr">FR</span>
+            </div>
+            <div class="hamburger" id="navBtn"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="menu-overlay" id="menu">
+        <a href="#" onclick="showPage('home')" data-key="nav-home">STARTSEITE</a>
+        <a href="#" onclick="showPage('about')" data-key="nav-about">BIOGRAFIE</a>
+        <a href="#" onclick="showPage('jason')" data-key="nav-jason">JASON REMIX</a>
+        <a href="#" onclick="showPage('music')" data-key="nav-music">MUSIK</a>
+        <a href="#" onclick="showPage('art')" data-key="nav-art">GALERIE</a>
+        <a href="#" onclick="showPage('termine')" data-key="nav-events">TERMINE</a>
+        <a href="#" onclick="showPage('aue')" data-key="nav-aue">HEIMAT (AUE)</a>
+        <a href="#" onclick="showPage('shop')" data-key="nav-shop">MERCHANDISE</a>
+        <a href="#" onclick="showPage('presse')" data-key="nav-presse">PRESSE</a>
+        <a href="#" onclick="showPage('kontakt')" data-key="nav-contact">KONTAKT</a>
+    </div>
+
+    <main id="home" class="page active">
+        <h1 data-key="home-title">ANGELINA<br><span class="accent">GRAHNERT</span></h1>
+        <div class="glass-card">
+            <p data-key="home-desc">Sängerin, Künstlerin & DJ. Die Symbiose aus visueller Ästhetik und kompromisslosem Sound – direkt aus Aue-Bad Schlema.</p>
+        </div>
+    </main>
+
+    <section id="about" class="page">
+        <h1 data-key="nav-about">BIOGRAFIE</h1>
+        <div class="grid">
+            <div class="glass-card">
+                <h2 data-key="bio-head">DIE VISION</h2>
+                <p data-key="bio-text">Angelina Grahnert vereint ihre Leidenschaft für bildende Kunst mit einer kraftvollen Stimme und energetischen DJ-Sets. Ihr Weg führte sie von den klassischen Ateliers hin zu den pulsierenden Stages der elektronischen Musikszene.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="jason" class="page">
+        <h1 data-key="nav-jason">JASON REMIX</h1>
+        <div class="glass-card">
+            <h2 data-key="jason-head">SOUND ARCHITECT</h2>
+            <p data-key="jason-text">Produzent, DJ und Verlobter. Jason Remix ist das Mastermind hinter den massiven Hardstyle-Produktionen und sorgt für den nötigen Druck in den gemeinsamen Kollaborationen.</p>
+        </div>
+    </section>
+
+    <section id="music" class="page">
+        <h1 data-key="nav-music">MUSIK</h1>
+        <div class="grid">
+            <div class="glass-card"><h3>LIVE SETS</h3><p>Melodic Techno & Hardstyle Fusion</p></div>
+            <div class="glass-card"><h3>VOCALS</h3><p>Original Sessions & Collabs</p></div>
+        </div>
+    </section>
+
+    <section id="art" class="page">
+        <h1 data-key="nav-art">GALERIE</h1>
+        <div class="grid">
+            <div class="glass-card" style="height:250px">ART PIECE I</div>
+            <div class="glass-card" style="height:250px">ART PIECE II</div>
+        </div>
+    </section>
+
+    <section id="termine" class="page">
+        <h1 data-key="nav-events">TERMINE</h1>
+        <div class="glass-card">
+            <ul>
+                <li><strong>20.06.2026</strong> - Festival Showcase</li>
+                <li><strong>15.07.2026</strong> - Club Night Performance</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="aue" class="page">
+        <h1 data-key="nav-aue">HEIMAT (AUE)</h1>
+        <div class="glass-card">
+            <p data-key="aue-text">Stolz verwurzelt in Aue-Bad Schlema. Die Tradition des Erzgebirges trifft auf die Innovation der modernen Kunst.</p>
+        </div>
+    </section>
+
+    <section id="shop" class="page">
+        <h1 data-key="nav-shop">MERCHANDISE</h1>
+        <div class="glass-card" style="text-align: center;">
+            <h3 data-key="drop-msg">DER NÄCHSTE DROP STARTET IN:</h3>
+            <div id="countdown">
+                <div class="time-unit"><span id="days">50</span><div class="time-label">DAYS</div></div>
+                <div class="time-unit"><span id="hours">00</span><div class="time-label">HOURS</div></div>
+                <div class="time-unit"><span id="minutes">00</span><div class="time-label">MIN</div></div>
+            </div>
+            <input type="email" placeholder="E-Mail für Early Access" class="input-box">
+            <button class="btn-notify">REGISTER</button>
+        </div>
+        <div class="grid">
+            <div class="glass-card" style="padding:0; overflow:hidden; position:relative; height:300px;">
+                <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=400" class="teaser-img">
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-shadow: 0 0 10px #000;">HOODIE</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="presse" class="page">
+        <h1 data-key="nav-presse">PRESSE</h1>
+        <div class="glass-card">
+            <p data-key="press-text">Download von Rider, EPK und hochauflösenden Pressebildern.</p>
+        </div>
+    </section>
+
+    <section id="kontakt" class="page">
+        <h1 data-key="nav-contact">KONTAKT</h1>
+        <div class="glass-card">
+            <h2 data-key="contact-head">BOOKING ANFRAGEN</h2>
+            <p>E-Mail: <span class="accent">info@angelinagrahnert.de</span></p>
+        </div>
+    </section>
+
+    <footer>© 2026 ANGELINA GRAHNERT x JASON REMIX</footer>
+
+    <script>
+        const translations = {
+            de: {
+                "nav-home": "STARTSEITE", "nav-about": "BIOGRAFIE", "nav-jason": "JASON REMIX", "nav-music": "MUSIK", "nav-art": "GALERIE", 
+                "nav-events": "TERMINE", "nav-aue": "HEIMAT (AUE)", "nav-shop": "MERCHANDISE", "nav-presse": "PRESSE", "nav-contact": "KONTAKT",
+                "home-title": "ANGELINA<br><span class='accent'>GRAHNERT</span>", "home-desc": "Sängerin, Künstlerin & DJ. Die Symbiose aus visueller Ästhetik und kompromisslosem Sound – direkt aus Aue-Bad Schlema.",
+                "bio-head": "DIE VISION", "bio-text": "Angelina Grahnert vereint ihre Leidenschaft für bildende Kunst mit einer kraftvollen Stimme und energetischen DJ-Sets.",
+                "jason-head": "SOUND ARCHITECT", "jason-text": "Produzent, DJ und Verlobter. Jason Remix ist das Mastermind hinter den massiven Hardstyle-Produktionen.",
+                "aue-text": "Stolz verwurzelt in Aue-Bad Schlema. Die Tradition des Erzgebirges trifft auf die Innovation der modernen Kunst.",
+                "drop-msg": "DER NÄCHSTE DROP STARTET IN:", "press-text": "Download von Rider, EPK und hochauflösenden Pressebildern.", "contact-head": "BOOKING ANFRAGEN"
+            },
+            en: {
+                "nav-home": "HOME", "nav-about": "BIOGRAPHY", "nav-jason": "JASON REMIX", "nav-music": "MUSIC", "nav-art": "GALLERY", 
+                "nav-events": "TOUR DATES", "nav-aue": "ROOTS (AUE)", "nav-shop": "MERCHANDISE", "nav-presse": "PRESS", "nav-contact": "CONTACT",
+                "home-title": "ANGELINA<br><span class='accent'>GRAHNERT</span>", "home-desc": "Singer, Artist & DJ. The synergy of visual aesthetics and uncompromising sound - straight from Aue-Bad Schlema.",
+                "bio-head": "THE VISION", "bio-text": "Angelina Grahnert combines her passion for visual arts with a powerful voice and energetic DJ sets.",
+                "jason-head": "SOUND ARCHITECT", "jason-text": "Producer, DJ and fiancé. Jason Remix is the mastermind behind the massive hardstyle productions.",
+                "aue-text": "Proudly rooted in Aue-Bad Schlema. Erzgebirge tradition meets modern art innovation.",
+                "drop-msg": "NEXT DROP STARTS IN:", "press-text": "Download Rider, EPK and high-res press photos.", "contact-head": "BOOKING REQUESTS"
+            },
+            fr: {
+                "nav-home": "ACCUEIL", "nav-about": "BIOGRAPHIE", "nav-jason": "JASON REMIX", "nav-music": "MUSIQUE", "nav-art": "GALERIE", 
+                "nav-events": "DATES", "nav-aue": "RACINES (AUE)", "nav-shop": "BOUTIQUE", "nav-presse": "PRESSE", "nav-contact": "CONTACT",
+                "home-title": "ANGELINA<br><span class='accent'>GRAHNERT</span>", "home-desc": "Chanteuse, Artiste & DJ. La synergie entre esthétique visuelle et son sans compromis - directement d'Aue-Bad Schlema.",
+                "bio-head": "LA VISION", "bio-text": "Angelina Grahnert allie sa passion pour les arts visuels à une voix puissante et des sets DJ énergiques.",
+                "jason-head": "ARCHITECTE DU SON", "jason-text": "Producteur, DJ et fiancé. Jason Remix est le cerveau derrière les productions hardstyle massives.",
+                "aue-text": "Fièrement enraciné à Aue-Bad Schlema. La tradition de l'Erzgebirge rencontre l'innovation de l'art moderne.",
+                "drop-msg": "PROCHAIN DROP DANS :", "press-text": "Téléchargez le Rider, l'EPK et des photos de presse haute résolution.", "contact-head": "DEMANDES DE BOOKING"
+            }
+        };
+
+        function setLang(lang) {
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                el.innerHTML = translations[lang][key];
+            });
+            document.querySelectorAll('.lang-switch span').forEach(s => s.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
+        }
+
+        const navBtn = document.getElementById('navBtn');
+        const menu = document.getElementById('menu');
+        navBtn.addEventListener('click', () => { navBtn.classList.toggle('active'); menu.classList.toggle('active'); });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            navBtn.classList.remove('active'); menu.classList.remove('active');
+            window.scrollTo(0,0);
+        }
+
+        const targetDate = new Date(); targetDate.setDate(targetDate.getDate() + 50);
+        function updateCountdown() {
+            const diff = targetDate - new Date();
+            document.getElementById('days').innerText = Math.floor(diff / (1000*60*60*24));
+            document.getElementById('hours').innerText = Math.floor((diff / (1000*60*60)) % 24);
+            document.getElementById('minutes').innerText = Math.floor((diff / 1000 / 60) % 60);
+        }
+        setInterval(updateCountdown, 1000); updateCountdown();
+    </script>
+</body>
+</html>
