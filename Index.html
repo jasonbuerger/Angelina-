@@ -1,258 +1,394 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANGELINA GRAHNERT | Official Artist Portal</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@200;400;700&family=Bodoni+Moda:ital,wght@1,400&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --magenta: #ff00ff;
-            --dark: #050005;
-            --glass: rgba(255, 255, 255, 0.05);
-            --transition: all 0.5s cubic-bezier(0.8, 0, 0.2, 1);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BeatLab – Musik erstellen im Browser</title>
+  <style>
+    :root {
+      --bg: #0f1020;
+      --panel: #191b36;
+      --panel-2: #23264d;
+      --accent: #66f2d5;
+      --accent-2: #7e7bff;
+      --text: #eef0ff;
+      --danger: #ff7a9c;
+      --muted: #a9afd4;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--dark); color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; line-height: 1.6; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(circle at top, #252a58, var(--bg) 45%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1.2rem;
+    }
 
-        /* --- NAVIGATION --- */
-        nav {
-            position: fixed; top: 0; width: 100%; padding: 30px 5%;
-            display: flex; justify-content: space-between; align-items: center; z-index: 2000;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
-        }
-        .logo { font-family: 'Syncopate'; font-size: 1.5rem; color: var(--magenta); text-decoration: none; letter-spacing: 5px; }
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-        .lang-switch span { cursor: pointer; font-size: 0.8rem; opacity: 0.5; margin-left: 10px; transition: 0.3s; }
-        .lang-switch span.active { opacity: 1; color: var(--magenta); font-weight: bold; }
+    .app {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 1rem;
+    }
 
-        .hamburger { width: 35px; height: 20px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 2100; }
-        .hamburger span { width: 100%; height: 2px; background: white; transition: var(--transition); }
-        .hamburger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
-        .hamburger.active span:nth-child(2) { opacity: 0; }
-        .hamburger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+    .panel {
+      background: linear-gradient(140deg, var(--panel), var(--panel-2));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+    }
 
-        /* --- MENU OVERLAY --- */
-        .menu-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; transform: translateY(-100%);
-            transition: var(--transition); z-index: 1900;
-        }
-        .menu-overlay.active { transform: translateY(0); }
-        .menu-overlay a { font-family: 'Syncopate'; font-size: clamp(1rem, 4vw, 1.8rem); color: white; text-decoration: none; margin: 8px 0; transition: 0.3s; }
-        .menu-overlay a:hover { color: var(--magenta); letter-spacing: 5px; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(1.4rem, 3vw, 2rem); }
+    p { color: var(--muted); }
 
-        /* --- CONTENT SYSTEM --- */
-        .page { display: none; min-height: 100vh; padding: 150px 10% 80px; animation: fadeIn 0.8s forwards; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .topbar,
+    .controls,
+    .synth-row,
+    .transport,
+    .keys {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
 
-        h1 { font-family: 'Syncopate'; font-size: clamp(2rem, 8vw, 5rem); line-height: 0.9; margin-bottom: 30px; text-transform: uppercase; }
-        h2 { font-family: 'Syncopate'; font-size: 1.5rem; color: var(--magenta); margin-bottom: 20px; }
-        .accent { color: var(--magenta); }
-        .glass-card { background: var(--glass); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,0,255,0.1); margin-bottom: 30px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+    button,
+    input,
+    select {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 0.6rem;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.95rem;
+    }
 
-        /* --- SHOP & COUNTDOWN --- */
-        #countdown { display: flex; gap: 20px; font-family: 'Syncopate'; margin: 30px 0; justify-content: center; }
-        .time-unit span { display: block; font-size: clamp(1.5rem, 5vw, 3rem); color: var(--magenta); }
-        .time-label { font-size: 0.6rem; opacity: 0.6; }
-        .teaser-img { width: 100%; height: 100%; object-fit: cover; filter: blur(15px); opacity: 0.4; transition: 0.5s; }
-        .input-box { background: transparent; border: 1px solid var(--magenta); padding: 15px; color: white; width: 100%; max-width: 300px; margin: 20px 0; }
-        .btn-notify { background: var(--magenta); border: none; padding: 15px 30px; font-family: 'Syncopate'; cursor: pointer; font-size: 0.7rem; color: #000; font-weight: bold; }
+    button {
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 600;
+    }
 
-        /* --- LISTS --- */
-        ul { list-style: none; }
-        li { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    button:hover { transform: translateY(-1px); }
+    .accent { background: var(--accent); color: #08130f; border-color: transparent; }
+    .warn { background: var(--danger); color: #29040f; border-color: transparent; }
 
-        footer { padding: 40px; text-align: center; font-size: 0.7rem; opacity: 0.4; border-top: 1px solid rgba(255,255,255,0.05); }
-    </style>
+    label {
+      display: grid;
+      gap: 0.35rem;
+      min-width: 130px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    input[type="range"] { width: 160px; accent-color: var(--accent); padding: 0; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 80px repeat(8, minmax(35px, 1fr));
+      gap: 0.35rem;
+      margin-top: 0.8rem;
+    }
+
+    .grid-label {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding-left: 0.25rem;
+    }
+
+    .step {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 0.45rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .step.active {
+      background: var(--accent-2);
+      border-color: rgba(255,255,255,0.6);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.25) inset;
+    }
+
+    .step.current {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .keyboard {
+      margin-top: 0.9rem;
+      display: grid;
+      grid-template-columns: repeat(8, minmax(55px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .key {
+      padding: 0.9rem 0.45rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      font-weight: 700;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .log {
+      margin-top: 0.8rem;
+      max-height: 160px;
+      overflow: auto;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      background: rgba(0,0,0,0.2);
+      border-radius: 0.6rem;
+      padding: 0.6rem;
+      white-space: pre-wrap;
+    }
+
+    .pill {
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+      padding: 0.3rem 0.65rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+  </style>
 </head>
 <body>
-
-    <nav>
-        <a href="#" class="logo" onclick="showPage('home')">AG</a>
-        <div class="nav-right">
-            <div class="lang-switch">
-                <span onclick="setLang('de')" id="btn-de" class="active">DE</span>
-                <span onclick="setLang('en')" id="btn-en">EN</span>
-                <span onclick="setLang('fr')" id="btn-fr">FR</span>
-            </div>
-            <div class="hamburger" id="navBtn"><span></span><span></span><span></span></div>
-        </div>
-    </nav>
-
-    <div class="menu-overlay" id="menu">
-        <a href="#" onclick="showPage('home')" data-key="nav-home">STARTSEITE</a>
-        <a href="#" onclick="showPage('about')" data-key="nav-about">BIOGRAFIE</a>
-        <a href="#" onclick="showPage('jason')" data-key="nav-jason">JASON REMIX</a>
-        <a href="#" onclick="showPage('music')" data-key="nav-music">MUSIK</a>
-        <a href="#" onclick="showPage('art')" data-key="nav-art">GALERIE</a>
-        <a href="#" onclick="showPage('termine')" data-key="nav-events">TERMINE</a>
-        <a href="#" onclick="showPage('aue')" data-key="nav-aue">HEIMAT (AUE)</a>
-        <a href="#" onclick="showPage('shop')" data-key="nav-shop">MERCHANDISE</a>
-        <a href="#" onclick="showPage('presse')" data-key="nav-presse">PRESSE</a>
-        <a href="#" onclick="showPage('kontakt')" data-key="nav-contact">KONTAKT</a>
-    </div>
-
-    <main id="home" class="page active">
-        <h1 data-key="home-title">ANGELINA<br><span class="accent">GRAHNERT</span></h1>
-        <div class="glass-card">
-            <p data-key="home-desc">Sängerin, Künstlerin & DJ. Die Symbiose aus visueller Ästhetik und kompromisslosem Sound – direkt aus Aue-Bad Schlema.</p>
-        </div>
-    </main>
-
-    <section id="about" class="page">
-        <h1 data-key="nav-about">BIOGRAFIE</h1>
-        <div class="grid">
-            <div class="glass-card">
-                <h2 data-key="bio-head">DIE VISION</h2>
-                <p data-key="bio-text">Angelina Grahnert vereint ihre Leidenschaft für bildende Kunst mit einer kraftvollen Stimme und energetischen DJ-Sets. Ihr Weg führte sie von den klassischen Ateliers hin zu den pulsierenden Stages der elektronischen Musikszene.</p>
-            </div>
-        </div>
+  <main class="app">
+    <section class="panel">
+      <div class="topbar">
+        <h1>🎛️ BeatLab – Musik erstellen direkt im Browser</h1>
+        <span class="pill">Kein Download nötig</span>
+      </div>
+      <p>Baue Beats mit dem Step-Sequencer, spiele Melodien über die Tastatur und passe den Synth live an.</p>
     </section>
 
-    <section id="jason" class="page">
-        <h1 data-key="nav-jason">JASON REMIX</h1>
-        <div class="glass-card">
-            <h2 data-key="jason-head">SOUND ARCHITECT</h2>
-            <p data-key="jason-text">Produzent, DJ und Verlobter. Jason Remix ist das Mastermind hinter den massiven Hardstyle-Produktionen und sorgt für den nötigen Druck in den gemeinsamen Kollaborationen.</p>
+    <section class="layout">
+      <article class="panel">
+        <h2>1) Sequencer</h2>
+        <div class="transport" style="margin-top: .8rem;">
+          <button id="startBtn" class="accent">▶ Start</button>
+          <button id="stopBtn">■ Stop</button>
+          <button id="clearBtn" class="warn">Alles löschen</button>
+          <label>BPM
+            <input id="bpm" type="range" min="70" max="180" value="110" />
+          </label>
+          <span id="bpmLabel" class="pill">110 BPM</span>
         </div>
+
+        <div id="seqGrid" class="grid" aria-label="Step-Sequencer"></div>
+      </article>
+
+      <article class="panel">
+        <h2>2) Synth & Keyboard</h2>
+        <div class="synth-row" style="margin-top: .8rem;">
+          <label>Wellenform
+            <select id="waveform">
+              <option value="sine">Sine</option>
+              <option value="square">Square</option>
+              <option value="sawtooth" selected>Saw</option>
+              <option value="triangle">Triangle</option>
+            </select>
+          </label>
+
+          <label>Filter
+            <input id="filter" type="range" min="300" max="6000" value="1800" />
+          </label>
+
+          <label>Release
+            <input id="release" type="range" min="0.08" max="1.5" step="0.01" value="0.35" />
+          </label>
+
+          <label>Lautstärke
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.55" />
+          </label>
+        </div>
+
+        <h3 style="margin-top: .9rem;">Maus oder Tasten: A S D F G H J K</h3>
+        <div id="keyboard" class="keyboard"></div>
+
+        <div class="log" id="log"></div>
+      </article>
     </section>
+  </main>
 
-    <section id="music" class="page">
-        <h1 data-key="nav-music">MUSIK</h1>
-        <div class="grid">
-            <div class="glass-card"><h3>LIVE SETS</h3><p>Melodic Techno & Hardstyle Fusion</p></div>
-            <div class="glass-card"><h3>VOCALS</h3><p>Original Sessions & Collabs</p></div>
-        </div>
-    </section>
+  <script>
+    const notes = [
+      { name: 'C4', freq: 261.63, key: 'A' },
+      { name: 'D4', freq: 293.66, key: 'S' },
+      { name: 'E4', freq: 329.63, key: 'D' },
+      { name: 'F4', freq: 349.23, key: 'F' },
+      { name: 'G4', freq: 392.00, key: 'G' },
+      { name: 'A4', freq: 440.00, key: 'H' },
+      { name: 'B4', freq: 493.88, key: 'J' },
+      { name: 'C5', freq: 523.25, key: 'K' }
+    ];
 
-    <section id="art" class="page">
-        <h1 data-key="nav-art">GALERIE</h1>
-        <div class="grid">
-            <div class="glass-card" style="height:250px">ART PIECE I</div>
-            <div class="glass-card" style="height:250px">ART PIECE II</div>
-        </div>
-    </section>
+    const seqSteps = 8;
+    const sequence = Array.from({ length: notes.length }, () => Array(seqSteps).fill(false));
 
-    <section id="termine" class="page">
-        <h1 data-key="nav-events">TERMINE</h1>
-        <div class="glass-card">
-            <ul>
-                <li><strong>20.06.2026</strong> - Festival Showcase</li>
-                <li><strong>15.07.2026</strong> - Club Night Performance</li>
-            </ul>
-        </div>
-    </section>
+    const grid = document.getElementById('seqGrid');
+    const keyboard = document.getElementById('keyboard');
+    const bpmSlider = document.getElementById('bpm');
+    const bpmLabel = document.getElementById('bpmLabel');
+    const waveform = document.getElementById('waveform');
+    const filterSlider = document.getElementById('filter');
+    const releaseSlider = document.getElementById('release');
+    const volumeSlider = document.getElementById('volume');
+    const log = document.getElementById('log');
 
-    <section id="aue" class="page">
-        <h1 data-key="nav-aue">HEIMAT (AUE)</h1>
-        <div class="glass-card">
-            <p data-key="aue-text">Stolz verwurzelt in Aue-Bad Schlema. Die Tradition des Erzgebirges trifft auf die Innovation der modernen Kunst.</p>
-        </div>
-    </section>
+    let currentStep = 0;
+    let timer = null;
 
-    <section id="shop" class="page">
-        <h1 data-key="nav-shop">MERCHANDISE</h1>
-        <div class="glass-card" style="text-align: center;">
-            <h3 data-key="drop-msg">DER NÄCHSTE DROP STARTET IN:</h3>
-            <div id="countdown">
-                <div class="time-unit"><span id="days">50</span><div class="time-label">DAYS</div></div>
-                <div class="time-unit"><span id="hours">00</span><div class="time-label">HOURS</div></div>
-                <div class="time-unit"><span id="minutes">00</span><div class="time-label">MIN</div></div>
-            </div>
-            <input type="email" placeholder="E-Mail für Early Access" class="input-box">
-            <button class="btn-notify">REGISTER</button>
-        </div>
-        <div class="grid">
-            <div class="glass-card" style="padding:0; overflow:hidden; position:relative; height:300px;">
-                <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=400" class="teaser-img">
-                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-shadow: 0 0 10px #000;">HOODIE</div>
-            </div>
-        </div>
-    </section>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const master = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = Number(filterSlider.value);
+    master.gain.value = Number(volumeSlider.value);
 
-    <section id="presse" class="page">
-        <h1 data-key="nav-presse">PRESSE</h1>
-        <div class="glass-card">
-            <p data-key="press-text">Download von Rider, EPK und hochauflösenden Pressebildern.</p>
-        </div>
-    </section>
+    filter.connect(master);
+    master.connect(audioCtx.destination);
 
-    <section id="kontakt" class="page">
-        <h1 data-key="nav-contact">KONTAKT</h1>
-        <div class="glass-card">
-            <h2 data-key="contact-head">BOOKING ANFRAGEN</h2>
-            <p>E-Mail: <span class="accent">info@angelinagrahnert.de</span></p>
-        </div>
-    </section>
+    function addLog(msg) {
+      const time = new Date().toLocaleTimeString('de-DE');
+      log.textContent = `[${time}] ${msg}\n` + log.textContent;
+    }
 
-    <footer>© 2026 ANGELINA GRAHNERT x JASON REMIX</footer>
+    function playNote(freq, duration = 0.23) {
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const env = audioCtx.createGain();
 
-    <script>
-        const translations = {
-            de: {
-                "nav-home": "STARTSEITE", "nav-about": "BIOGRAFIE", "nav-jason": "JASON REMIX", "nav-music": "MUSIK", "nav-art": "GALERIE", 
-                "nav-events": "TERMINE", "nav-aue": "HEIMAT (AUE)", "nav-shop": "MERCHANDISE", "nav-presse": "PRESSE", "nav-contact": "KONTAKT",
-                "home-title": "ANGELINA<br><span class='accent'>GRAHNERT</span>", "home-desc": "Sängerin, Künstlerin & DJ. Die Symbiose aus visueller Ästhetik und kompromisslosem Sound – direkt aus Aue-Bad Schlema.",
-                "bio-head": "DIE VISION", "bio-text": "Angelina Grahnert vereint ihre Leidenschaft für bildende Kunst mit einer kraftvollen Stimme und energetischen DJ-Sets.",
-                "jason-head": "SOUND ARCHITECT", "jason-text": "Produzent, DJ und Verlobter. Jason Remix ist das Mastermind hinter den massiven Hardstyle-Produktionen.",
-                "aue-text": "Stolz verwurzelt in Aue-Bad Schlema. Die Tradition des Erzgebirges trifft auf die Innovation der modernen Kunst.",
-                "drop-msg": "DER NÄCHSTE DROP STARTET IN:", "press-text": "Download von Rider, EPK und hochauflösenden Pressebildern.", "contact-head": "BOOKING ANFRAGEN"
-            },
-            en: {
-                "nav-home": "HOME", "nav-about": "BIOGRAPHY", "nav-jason": "JASON REMIX", "nav-music": "MUSIC", "nav-art": "GALLERY", 
-                "nav-events": "TOUR DATES", "nav-aue": "ROOTS (AUE)", "nav-shop": "MERCHANDISE", "nav-presse": "PRESS", "nav-contact": "CONTACT",
-                "home-title": "ANGELINA<br><span class='accent'>GRAHNERT</span>", "home-desc": "Singer, Artist & DJ. The synergy of visual aesthetics and uncompromising sound - straight from Aue-Bad Schlema.",
-                "bio-head": "THE VISION", "bio-text": "Angelina Grahnert combines her passion for visual arts with a powerful voice and energetic DJ sets.",
-                "jason-head": "SOUND ARCHITECT", "jason-text": "Producer, DJ and fiancé. Jason Remix is the mastermind behind the massive hardstyle productions.",
-                "aue-text": "Proudly rooted in Aue-Bad Schlema. Erzgebirge tradition meets modern art innovation.",
-                "drop-msg": "NEXT DROP STARTS IN:", "press-text": "Download Rider, EPK and high-res press photos.", "contact-head": "BOOKING REQUESTS"
-            },
-            fr: {
-                "nav-home": "ACCUEIL", "nav-about": "BIOGRAPHIE", "nav-jason": "JASON REMIX", "nav-music": "MUSIQUE", "nav-art": "GALERIE", 
-                "nav-events": "DATES", "nav-aue": "RACINES (AUE)", "nav-shop": "BOUTIQUE", "nav-presse": "PRESSE", "nav-contact": "CONTACT",
-                "home-title": "ANGELINA<br><span class='accent'>GRAHNERT</span>", "home-desc": "Chanteuse, Artiste & DJ. La synergie entre esthétique visuelle et son sans compromis - directement d'Aue-Bad Schlema.",
-                "bio-head": "LA VISION", "bio-text": "Angelina Grahnert allie sa passion pour les arts visuels à une voix puissante et des sets DJ énergiques.",
-                "jason-head": "ARCHITECTE DU SON", "jason-text": "Producteur, DJ et fiancé. Jason Remix est le cerveau derrière les productions hardstyle massives.",
-                "aue-text": "Fièrement enraciné à Aue-Bad Schlema. La tradition de l'Erzgebirge rencontre l'innovation de l'art moderne.",
-                "drop-msg": "PROCHAIN DROP DANS :", "press-text": "Téléchargez le Rider, l'EPK et des photos de presse haute résolution.", "contact-head": "DEMANDES DE BOOKING"
-            }
-        };
+      osc.type = waveform.value;
+      osc.frequency.value = freq;
 
-        function setLang(lang) {
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.getAttribute('data-key');
-                el.innerHTML = translations[lang][key];
-            });
-            document.querySelectorAll('.lang-switch span').forEach(s => s.classList.remove('active'));
-            document.getElementById('btn-' + lang).classList.add('active');
+      env.gain.setValueAtTime(0, now);
+      env.gain.linearRampToValueAtTime(0.85, now + 0.01);
+      env.gain.exponentialRampToValueAtTime(0.001, now + duration + Number(releaseSlider.value));
+
+      osc.connect(env);
+      env.connect(filter);
+      osc.start(now);
+      osc.stop(now + duration + Number(releaseSlider.value) + 0.05);
+    }
+
+    function renderSequencer() {
+      grid.innerHTML = '';
+      notes.forEach((note, noteIndex) => {
+        const label = document.createElement('div');
+        label.className = 'grid-label';
+        label.textContent = note.name;
+        grid.appendChild(label);
+
+        for (let step = 0; step < seqSteps; step++) {
+          const btn = document.createElement('button');
+          btn.className = 'step' + (sequence[noteIndex][step] ? ' active' : '') + (step === currentStep ? ' current' : '');
+          btn.dataset.noteIndex = noteIndex;
+          btn.dataset.step = step;
+          btn.addEventListener('click', () => {
+            sequence[noteIndex][step] = !sequence[noteIndex][step];
+            renderSequencer();
+          });
+          grid.appendChild(btn);
         }
+      });
+    }
 
-        const navBtn = document.getElementById('navBtn');
-        const menu = document.getElementById('menu');
-        navBtn.addEventListener('click', () => { navBtn.classList.toggle('active'); menu.classList.toggle('active'); });
+    function renderKeyboard() {
+      keyboard.innerHTML = '';
+      notes.forEach((note) => {
+        const btn = document.createElement('button');
+        btn.className = 'key';
+        btn.innerHTML = `${note.name}<br><small>${note.key}</small>`;
+        btn.addEventListener('mousedown', async () => {
+          await audioCtx.resume();
+          playNote(note.freq, 0.35);
+          addLog(`Manuell gespielt: ${note.name}`);
+        });
+        keyboard.appendChild(btn);
+      });
+    }
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            navBtn.classList.remove('active'); menu.classList.remove('active');
-            window.scrollTo(0,0);
-        }
+    function tick() {
+      notes.forEach((note, i) => {
+        if (sequence[i][currentStep]) playNote(note.freq);
+      });
 
-        const targetDate = new Date(); targetDate.setDate(targetDate.getDate() + 50);
-        function updateCountdown() {
-            const diff = targetDate - new Date();
-            document.getElementById('days').innerText = Math.floor(diff / (1000*60*60*24));
-            document.getElementById('hours').innerText = Math.floor((diff / (1000*60*60)) % 24);
-            document.getElementById('minutes').innerText = Math.floor((diff / 1000 / 60) % 60);
-        }
-        setInterval(updateCountdown, 1000); updateCountdown();
-    </script>
+      renderSequencer();
+      currentStep = (currentStep + 1) % seqSteps;
+    }
+
+    async function start() {
+      await audioCtx.resume();
+      if (timer) return;
+      currentStep = 0;
+      const stepMs = (60 / Number(bpmSlider.value)) * 1000 / 2;
+      timer = setInterval(tick, stepMs);
+      addLog(`Sequencer gestartet (${bpmSlider.value} BPM)`);
+    }
+
+    function stop() {
+      clearInterval(timer);
+      timer = null;
+      currentStep = 0;
+      renderSequencer();
+      addLog('Sequencer gestoppt');
+    }
+
+    document.getElementById('startBtn').addEventListener('click', start);
+    document.getElementById('stopBtn').addEventListener('click', stop);
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      sequence.forEach((row) => row.fill(false));
+      renderSequencer();
+      addLog('Pattern gelöscht');
+    });
+
+    bpmSlider.addEventListener('input', () => {
+      bpmLabel.textContent = `${bpmSlider.value} BPM`;
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        start();
+      }
+    });
+
+    filterSlider.addEventListener('input', () => {
+      filter.frequency.value = Number(filterSlider.value);
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      master.gain.value = Number(volumeSlider.value);
+    });
+
+    window.addEventListener('keydown', async (event) => {
+      const pressed = event.key.toUpperCase();
+      const note = notes.find((n) => n.key === pressed);
+      if (!note || event.repeat) return;
+      await audioCtx.resume();
+      playNote(note.freq, 0.38);
+      addLog(`Taste ${pressed}: ${note.name}`);
+    });
+
+    renderSequencer();
+    renderKeyboard();
+    addLog('BeatLab bereit – setze Steps und drücke Start.');
+  </script>
 </body>
 </html>
